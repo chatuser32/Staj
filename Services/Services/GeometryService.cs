@@ -1,4 +1,4 @@
-﻿using App.Core.DTOs;
+using App.Core.DTOs;
 using App.Core.Entities;
 using App.Core.Validators;
 using App.Repositories.Interfaces;
@@ -17,16 +17,18 @@ namespace App.Services.Services
     {
         private readonly IGeometryRepository repository;
         private readonly IUnitOfWork unitOfWork;
+        private readonly GeometryValidator validator;
 
-        public GeometryService(IGeometryRepository repository, IUnitOfWork unitOfWork)
+        public GeometryService(IGeometryRepository repository, IUnitOfWork unitOfWork, GeometryValidator validator)
         {
             this.repository = repository;
             this.unitOfWork = unitOfWork;
+            this.validator = validator;
         }
 
         public async Task<Response<GeometryDto>> AddGeometryAsync(GeometryDto dto)
         {
-            var validationMessage = GeometryValidator.Validate(dto);
+            var validationMessage = validator.Validate(dto);
             if (validationMessage != null)
                 return Response<GeometryDto>.Fail(validationMessage);
 
@@ -82,7 +84,7 @@ namespace App.Services.Services
             if (entity == null)
                 return Response<GeometryDto>.Fail(ErrorMessages.NotFound);
 
-            var validationMessage = GeometryValidator.Validate(dto);
+            var validationMessage = validator.Validate(dto);
             if (validationMessage != null)
                 return Response<GeometryDto>.Fail(validationMessage);
 
